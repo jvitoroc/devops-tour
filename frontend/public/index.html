@@ -17,7 +17,6 @@
             fetch('http://127.0.0.1:64614/hello?name='+e.target.value).then(function(response) {
                 return response.json();
             }).then((data)=>{
-                console.log(data);
                 foo.textContent = data.message;
             }).catch(function(err) {
                 console.error(err);

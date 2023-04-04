@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/hello", helloHandler)
+	http.HandleFunc("/", helloHandler)
 
 	log.Print("listening")
 	err := http.ListenAndServe("0.0.0.0:8080", nil)
