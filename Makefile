@@ -17,7 +17,7 @@ build-push-frontend: build-frontend push-frontend
 build-push-all: build-push-backend build-push-frontend
 
 deploy-backend:
-	kubectl apply -f ./backend/deployment.yml,./backend/service.yml,./backend/ingress.yml
+	kubectl apply -f ./backend/deployment.yml,./backend/service.yml,./ingress.yml
 
 deploy-frontend:
-	kubectl apply -f ./frontend/deployment.yml,./frontend/service.yml
+	kubectl apply -f ./frontend/deployment.yml,./frontend/service.yml,./ingress.yml
