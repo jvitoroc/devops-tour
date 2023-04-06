@@ -3,12 +3,14 @@ build-backend:
 
 push-backend:
 	docker push jvitoroc17/local:backend
+	kubectl delete pod -l app=api
 
 build-frontend:
 	docker build ./frontend -t jvitoroc17/local:frontend
 
 push-frontend:
 	docker push jvitoroc17/local:frontend
+	kubectl delete pod -l app=frontend
 
 build-push-backend: build-backend push-backend
 
@@ -21,3 +23,5 @@ deploy-backend:
 
 deploy-frontend:
 	kubectl apply -f ./frontend/deployment.yml,./frontend/service.yml,./ingress.yml
+
+all: build-push-all deploy-backend deploy-frontend

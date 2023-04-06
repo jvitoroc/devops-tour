@@ -17,6 +17,6 @@ spec:
       containers:
       - name: api
         image: jvitoroc17/local:backend
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080

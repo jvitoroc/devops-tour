@@ -14,7 +14,7 @@
         let foo = document.getElementById("foo");
 
         document.getElementById("name").addEventListener("input", (e)=>{
-            fetch('http://127.0.0.1:64614/hello?name='+e.target.value).then(function(response) {
+            fetch('http://api.devops-tour.com/hello?name='+e.target.value).then(function(response) {
                 return response.json();
             }).then((data)=>{
                 foo.textContent = data.message;

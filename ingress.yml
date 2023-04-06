@@ -14,7 +14,7 @@ spec:
             service:
               name: api
               port:
-                number: 8081
+                number: 80
     - host: devops-tour.com
       http:
         paths:
