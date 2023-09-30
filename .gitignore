@@ -1,4 +1,4 @@
 .env
 infra/.terraform
-infra/terraform.state
+infra/terraform.tfstate
 infra/terraform.tfstate.backup
