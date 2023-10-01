@@ -71,6 +71,7 @@ resource "kubernetes_service" "api" {
     name = "api"
   }
   spec {
+    type = "LoadBalancer"
     selector = {
       app = "api"
     }
@@ -86,6 +87,7 @@ resource "kubernetes_service" "frontend" {
     name = "frontend"
   }
   spec {
+    type = "LoadBalancer"
     selector = {
       app = "frontend"
     }
@@ -99,13 +101,16 @@ resource "kubernetes_service" "frontend" {
 resource "kubernetes_ingress_v1" "devops_tour" {
   metadata {
     name = "devops-tour-ingress"
+    annotations = {
+      "kubernetes.io/ingress.class": "alb",
+      "alb.ingress.kubernetes.io/scheme": "internet-facing"
+    }
   }
 
   spec {
-    ingress_class_name = "nginx"
+    ingress_class_name = "alb"
     
     rule {
-      host = "api.devops-tour.com"
       http {
         path {
           path_type = "Prefix"
@@ -118,13 +123,12 @@ resource "kubernetes_ingress_v1" "devops_tour" {
             }
           }
 
-          path = "/"
+          path = "/api"
         }
       }
     }
     
     rule {
-      host = "devops-tour.com"
       http {
         path {
           path_type = "Prefix"
@@ -137,7 +141,7 @@ resource "kubernetes_ingress_v1" "devops_tour" {
             }
           }
 
-          path = "/"
+          path = "/frontend"
         }
       }
     }
