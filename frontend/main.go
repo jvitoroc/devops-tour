@@ -1,56 +1,77 @@
 package main
 
 import (
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
 
 const (
-	templatesPath = "./templates"
-	publicPath    = "./public"
-	argPrefix     = "DEVOPS_"
+	templatesPath   = "templates"
+	defaultTemplate = "index.html.tmpl"
+
+	argPrefix = "DEVOPS_"
 )
 
+var args map[string]string
+
 func main() {
-	args := make(map[string]string)
+	args = make(map[string]string)
 	for _, arg := range os.Environ() {
 		r := strings.SplitN(arg, "=", 2)
-		if strings.HasPrefix(r[0], argPrefix) {
-			args[r[0]] = r[1]
+		key := r[0]
+		value := ""
+		if len(r) > 1 {
+			value = r[1]
+		}
+
+		if strings.HasPrefix(key, argPrefix) {
+			args[key] = value
 		}
 	}
 
-	files, err := os.ReadDir(templatesPath)
+	http.HandleFunc("/health", healthHandler)
+	http.HandleFunc("/", serveTemplates)
+
+	log.Print("listening")
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
+	}
+}
+
+func serveTemplates(w http.ResponseWriter, r *http.Request) {
+	file := filepath.Clean(r.URL.Path)
+	file = strings.Trim(file, "/")
+	if file == "" {
+		file = defaultTemplate
 	}
 
-	for _, f := range files {
-		if f.IsDir() {
-			continue
+	fp := filepath.Join(templatesPath, file)
+
+	tmpl, err := template.ParseFiles(fp)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			w.WriteHeader(404)
+			return
 		}
 
-		templateName := f.Name()
-
-		finalFileName, _ := strings.CutSuffix(templateName, ".tmpl")
-		finalFilePath := path.Join(publicPath, finalFileName)
-		finalFile, err := os.OpenFile(finalFilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, os.ModeAppend)
-		if err != nil {
-			panic(err)
-		}
-		defer finalFile.Close()
-
-		templatePath := path.Join(templatesPath, templateName)
-		tpl, err := template.New(templatePath).ParseFiles(templatePath)
-		if err != nil {
-			panic(err)
-		}
-
-		err = tpl.ExecuteTemplate(finalFile, templateName, args)
-		if err != nil {
-			panic(err)
-		}
+		w.WriteHeader(500)
+		return
 	}
+
+	err = tmpl.ExecuteTemplate(w, file, args)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+		w.WriteHeader(500)
+	}
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
 }

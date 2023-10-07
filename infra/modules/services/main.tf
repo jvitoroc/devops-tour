@@ -4,6 +4,9 @@ resource "kubernetes_deployment" "api" {
     labels = {
       app = "api"
     }
+    annotations = {
+      "configmap.reloader.stakater.com/reload" = var.configmap_name
+    }
   }
   spec {
     replicas = 2
@@ -28,7 +31,7 @@ resource "kubernetes_deployment" "api" {
           }
           env_from {
             config_map_ref {
-              name = 
+              name = var.configmap_name
             }
           }
         }
@@ -42,6 +45,9 @@ resource "kubernetes_deployment" "frontend" {
     name = "frontend-deployment"
     labels = {
       app = "frontend"
+    }
+    annotations = {
+      "configmap.reloader.stakater.com/reload" = var.configmap_name
     }
   }
   spec {
@@ -64,6 +70,11 @@ resource "kubernetes_deployment" "frontend" {
           image_pull_policy = "Always"
           port {
             container_port = 8080
+          }
+          env_from {
+            config_map_ref {
+              name = var.configmap_name
+            }
           }
         }
       }

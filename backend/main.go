@@ -9,6 +9,7 @@ import (
 
 func main() {
 	http.HandleFunc("/hello", helloHandler)
+	http.HandleFunc("/health", healthHandler)
 
 	log.Print("listening")
 	err := http.ListenAndServe("0.0.0.0:8080", nil)
@@ -44,4 +45,8 @@ func hello(name string) string {
 	}
 
 	return "Hello " + name
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
 }

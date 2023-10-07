@@ -59,32 +59,39 @@ module "alb_controller" {
   eks_oidc_provider_arn = module.eks.oidc_provider_arn
 }
 
+module "parameters" {
+  source = "../../modules/parameters"
+}
+
+locals {
+  env_vars = {
+    for i, param in module.parameters.params :
+    format("%s%s", "DEV_OPS_", upper(element(split("/", param.name), length(split("/", param.name)) - 1))) => param.value
+  }
+}
+
+module "configmap" {
+  source = "../../modules/configmap"
+
+  env_vars = local.env_vars
+}
+
 module "services" {
   source = "../../modules/services"
+
+  configmap_name = module.configmap.name
 }
 
 module "ingress" {
   source = "../../modules/ingress"
 
   annotations = {
-    "kubernetes.io/ingress.class": "alb",
-    "alb.ingress.kubernetes.io/scheme": "internet-facing"
+    "kubernetes.io/ingress.class" : "alb",
+    "alb.ingress.kubernetes.io/scheme" : "internet-facing"
   }
   class_name = "alb"
 }
 
-resource "kubernetes_config_map" "example" {
-  metadata {
-    name = "my-config"
-  }
-
-  data = {
-    api_host             = "myhost:443"
-    db_host              = "dbhost:5432"
-    "my_config_file.yml" = "${file("${path.module}/my_config_file.yml")}"
-  }
-
-  binary_data = {
-    "my_payload.bin" = "${filebase64("${path.module}/my_payload.bin")}"
-  }
+module "reloader" {
+  source = "../../modules/reloader"
 }
