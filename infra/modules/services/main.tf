@@ -26,6 +26,11 @@ resource "kubernetes_deployment" "api" {
           port {
             container_port = 8080
           }
+          env_from {
+            config_map_ref {
+              name = 
+            }
+          }
         }
       }
     }
@@ -94,72 +99,6 @@ resource "kubernetes_service" "frontend" {
     port {
       port        = 80
       target_port = 8080
-    }
-  }
-}
-
-locals {
-  common_ingress_annotations = {
-    "kubernetes.io/ingress.class": "alb",
-    "alb.ingress.kubernetes.io/scheme": "internet-facing"
-  }
-}
-
-resource "kubernetes_ingress_v1" "api" {
-  metadata {
-    name = "devops-tour-ingress-api"
-    annotations = local.common_ingress_annotations
-  }
-
-  spec {
-    ingress_class_name = "alb"
-    
-    rule {
-      http {
-        path {
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "api"
-              port {
-                number = 80
-              }
-            }
-          }
-
-          path = "/"
-        }
-      }
-    }
-  }
-}
-
-
-resource "kubernetes_ingress_v1" "frontend" {
-  metadata {
-    name = "devops-tour-ingress-frontend"
-    annotations = local.common_ingress_annotations
-  }
-
-  spec {
-    ingress_class_name = "alb"
-
-    rule {
-      http {
-        path {
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "frontend"
-              port {
-                number = 80
-              }
-            }
-          }
-
-          path = "/"
-        }
-      }
     }
   }
 }

@@ -14,3 +14,11 @@ provider "kubernetes" {
 module "services" {
     source = "../../modules/services"
 }
+
+module "ingress" {
+  source = "../../modules/ingress"
+
+  api_host = "api.devops-tour.com"
+  frontend_host = "devops-tour.com"
+  class_name = "nginx"
+}

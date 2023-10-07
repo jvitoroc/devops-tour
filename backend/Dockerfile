@@ -1,4 +1,4 @@
-FROM golang:1.20.2-alpine
+FROM --platform=linux/amd6 golang:1.20.2-alpine
 
 WORKDIR /app
 

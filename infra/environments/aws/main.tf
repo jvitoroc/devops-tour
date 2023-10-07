@@ -62,3 +62,29 @@ module "alb_controller" {
 module "services" {
   source = "../../modules/services"
 }
+
+module "ingress" {
+  source = "../../modules/ingress"
+
+  annotations = {
+    "kubernetes.io/ingress.class": "alb",
+    "alb.ingress.kubernetes.io/scheme": "internet-facing"
+  }
+  class_name = "alb"
+}
+
+resource "kubernetes_config_map" "example" {
+  metadata {
+    name = "my-config"
+  }
+
+  data = {
+    api_host             = "myhost:443"
+    db_host              = "dbhost:5432"
+    "my_config_file.yml" = "${file("${path.module}/my_config_file.yml")}"
+  }
+
+  binary_data = {
+    "my_payload.bin" = "${filebase64("${path.module}/my_payload.bin")}"
+  }
+}
