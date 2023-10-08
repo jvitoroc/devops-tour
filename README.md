@@ -9,3 +9,5 @@ add the following entries to the hosts file
 127.0.0.1 api.devops-tour.com
  
 minikube tunnel
+
+a
