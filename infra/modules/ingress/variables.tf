@@ -16,3 +16,11 @@ variable "frontend_host" {
     type = string
     default = null
 }
+
+variable "project_name" {
+  type = string
+}
+
+variable "env" {
+  type = string
+}

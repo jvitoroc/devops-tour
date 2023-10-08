@@ -1,5 +1,9 @@
+locals {
+  prefix = "/${var.project_name}/${var.env}"
+}
+
 resource "aws_ssm_parameter" "api_url" {
-  name           = "/devops-tour/production/api_url"
+  name           = "${local.prefix}/api_url"
   type           = "String"
   insecure_value = "http://api.euteamoleticia.com"
 
@@ -9,7 +13,7 @@ resource "aws_ssm_parameter" "api_url" {
 }
 
 data "aws_ssm_parameters_by_path" "parameters" {
-  path      = "/devops-tour/production"
+  path      = local.prefix
   recursive = true
 }
 

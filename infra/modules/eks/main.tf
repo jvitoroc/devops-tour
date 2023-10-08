@@ -9,7 +9,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.2"
 
-  name = var.cluster_name
+  name = "${var.project_name}-${var.env}-vpc"
   cidr = local.vpc_cidr
 
   azs             = local.azs
@@ -31,7 +31,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.16.0"
 
-  cluster_name                   = var.cluster_name
+  cluster_name                   = "${var.project_name}-${var.env}-cluster"
   cluster_endpoint_public_access = true
 
   cluster_addons = {

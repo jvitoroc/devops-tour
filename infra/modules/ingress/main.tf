@@ -1,6 +1,10 @@
+locals {
+  prefix = "${var.project_name}-${var.env}-ingress"
+}
+
 resource "kubernetes_ingress_v1" "api" {
   metadata {
-    name = "devops-tour-ingress-api"
+    name = "${local.prefix}-api"
     annotations = var.annotations
   }
 
@@ -30,7 +34,7 @@ resource "kubernetes_ingress_v1" "api" {
 
 resource "kubernetes_ingress_v1" "frontend" {
   metadata {
-    name = "devops-tour-ingress-frontend"
+    name = "${local.prefix}-frontend"
     annotations = var.annotations
   }
 

@@ -1,23 +1,3 @@
-terraform {
-  required_providers {
-    kubernetes = {
-      source = "hashicorp/kubernetes"
-    }
-
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.19.0"
-    }
-  }
-
-  backend "s3" {
-    bucket         = "terraform-remote-state-jvitoroc"
-    dynamodb_table = "terraform"
-    key            = "terraform.tfstate"
-    region         = "us-east-1"
-  }
-}
-
 provider "aws" {
   region = var.region
 }
@@ -47,20 +27,24 @@ provider "helm" {
 }
 
 module "eks" {
-  source = "../../modules/eks"
+  source = "../../../modules/eks"
 
-  cluster_name = var.cluster_name
+  project_name = var.name
+  env          = var.env
 }
 
 module "alb_controller" {
-  source = "../../modules/alb-controller"
+  source = "../../../modules/alb-controller"
 
   cluster_name          = module.eks.cluster_name
   eks_oidc_provider_arn = module.eks.oidc_provider_arn
 }
 
 module "parameters" {
-  source = "../../modules/parameters"
+  source = "../../../modules/parameters"
+
+  project_name = var.name
+  env          = var.env
 }
 
 locals {
@@ -71,27 +55,33 @@ locals {
 }
 
 module "configmap" {
-  source = "../../modules/configmap"
+  source = "../../../modules/configmap"
 
-  env_vars = local.env_vars
+  env_vars     = local.env_vars
+  project_name = var.name
+  env          = var.env
 }
 
 module "services" {
-  source = "../../modules/services"
+  source = "../../../modules/services"
 
-  configmap_name = module.configmap.name
+  config_map_name = module.configmap.name
+  project_name    = var.name
+  env             = var.env
 }
 
 module "ingress" {
-  source = "../../modules/ingress"
+  source = "../../../modules/ingress"
 
   annotations = {
     "kubernetes.io/ingress.class" : "alb",
     "alb.ingress.kubernetes.io/scheme" : "internet-facing"
   }
-  class_name = "alb"
+  class_name   = "alb"
+  project_name = var.name
+  env          = var.env
 }
 
 module "reloader" {
-  source = "../../modules/reloader"
+  source = "../../../modules/reloader"
 }

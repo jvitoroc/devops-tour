@@ -1,11 +1,16 @@
+locals {
+  deploymentPrefix = "${var.project_name}-${var.env}-deployment"
+  servicePrefix = "${var.project_name}-${var.env}-service"
+}
+
 resource "kubernetes_deployment" "api" {
   metadata {
-    name = "api-deployment"
+    name = "${local.deploymentPrefix}-api"
     labels = {
       app = "api"
     }
     annotations = {
-      "configmap.reloader.stakater.com/reload" = var.configmap_name
+      "configmap.reloader.stakater.com/reload" = var.config_map_name
     }
   }
   spec {
@@ -31,7 +36,7 @@ resource "kubernetes_deployment" "api" {
           }
           env_from {
             config_map_ref {
-              name = var.configmap_name
+              name = var.config_map_name
             }
           }
         }
@@ -42,12 +47,12 @@ resource "kubernetes_deployment" "api" {
 
 resource "kubernetes_deployment" "frontend" {
   metadata {
-    name = "frontend-deployment"
+    name = "${local.deploymentPrefix}-frontend"
     labels = {
       app = "frontend"
     }
     annotations = {
-      "configmap.reloader.stakater.com/reload" = var.configmap_name
+      "configmap.reloader.stakater.com/reload" = var.config_map_name
     }
   }
   spec {
@@ -73,7 +78,7 @@ resource "kubernetes_deployment" "frontend" {
           }
           env_from {
             config_map_ref {
-              name = var.configmap_name
+              name = var.config_map_name
             }
           }
         }
@@ -84,7 +89,7 @@ resource "kubernetes_deployment" "frontend" {
 
 resource "kubernetes_service" "api" {
   metadata {
-    name = "api"
+    name = "${local.servicePrefix}-api"
   }
   spec {
     type = "LoadBalancer"
@@ -100,7 +105,7 @@ resource "kubernetes_service" "api" {
 
 resource "kubernetes_service" "frontend" {
   metadata {
-    name = "frontend"
+    name = "${local.servicePrefix}-frontend"
   }
   spec {
     type = "LoadBalancer"

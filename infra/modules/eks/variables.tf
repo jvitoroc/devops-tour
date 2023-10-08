@@ -1,3 +1,7 @@
-variable "cluster_name" {
+variable "project_name" {
     type = string
+}
+
+variable "env" {
+  type = string
 }

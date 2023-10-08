@@ -1,7 +1,3 @@
-variable "env_vars" {
-  type = map(string)
-}
-
 variable "project_name" {
   type = string
 }
