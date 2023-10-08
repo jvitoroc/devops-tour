@@ -1,4 +1,4 @@
 go 1.20
 
-use ./backend
-use ./frontend
+use ./api
+use ./app

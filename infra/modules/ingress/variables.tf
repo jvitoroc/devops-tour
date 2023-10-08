@@ -12,7 +12,7 @@ variable "api_host" {
     default = null
 }
 
-variable "frontend_host" {
+variable "app_host" {
     type = string
     default = null
 }

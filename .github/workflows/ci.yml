@@ -21,22 +21,26 @@ jobs:
       with:
         go-version: '1.20'
 
-    - name: Test
-      run: go test -v ./...
+    - name: Test API
+      run: go test -v ./api
+
+    - name: Test APP
+      run: go test -v ./app
 
   build:
     runs-on: ubuntu-latest
+    needs: [test]
     steps:
     - uses: actions/checkout@v3
 
     - name: Build API
-      run: docker build ./backend -t jvitoroc17/local:backend
+      run: docker build ./api -t jvitoroc17/local:api
 
-    - name: Build Frontend
-      run: docker build ./frontend -t jvitoroc17/local:frontend
+    - name: Build APP
+      run: docker build ./app -t jvitoroc17/local:app
 
     - name: Push API
-      run: docker push jvitoroc17/local:backend
+      run: docker push jvitoroc17/local:api
 
-    - name: Push Frontend
-      run: docker push jvitoroc17/local:frontend
+    - name: Push APP
+      run: docker push jvitoroc17/local:app

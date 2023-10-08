@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "api" {
       spec {
         container {
           name              = "api"
-          image             = "jvitoroc17/local:backend"
+          image             = "jvitoroc17/local:api"
           image_pull_policy = "Always"
           port {
             container_port = 8080
@@ -45,11 +45,11 @@ resource "kubernetes_deployment" "api" {
   }
 }
 
-resource "kubernetes_deployment" "frontend" {
+resource "kubernetes_deployment" "app" {
   metadata {
-    name = "${local.deploymentPrefix}-frontend"
+    name = "${local.deploymentPrefix}-app"
     labels = {
-      app = "frontend"
+      app = "app"
     }
     annotations = {
       "configmap.reloader.stakater.com/reload" = var.config_map_name
@@ -59,19 +59,19 @@ resource "kubernetes_deployment" "frontend" {
     replicas = 2
     selector {
       match_labels = {
-        app = "frontend"
+        app = "app"
       }
     }
     template {
       metadata {
         labels = {
-          app = "frontend"
+          app = "app"
         }
       }
       spec {
         container {
-          name              = "frontend"
-          image             = "jvitoroc17/local:frontend"
+          name              = "app"
+          image             = "jvitoroc17/local:app"
           image_pull_policy = "Always"
           port {
             container_port = 8080
@@ -103,14 +103,14 @@ resource "kubernetes_service" "api" {
   }
 }
 
-resource "kubernetes_service" "frontend" {
+resource "kubernetes_service" "app" {
   metadata {
-    name = "${local.servicePrefix}-frontend"
+    name = "${local.servicePrefix}-app"
   }
   spec {
     type = "LoadBalancer"
     selector = {
-      app = "frontend"
+      app = "app"
     }
     port {
       port        = 80

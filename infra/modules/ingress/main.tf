@@ -32,9 +32,9 @@ resource "kubernetes_ingress_v1" "api" {
   }
 }
 
-resource "kubernetes_ingress_v1" "frontend" {
+resource "kubernetes_ingress_v1" "app" {
   metadata {
-    name = "${local.prefix}-frontend"
+    name = "${local.prefix}-app"
     annotations = var.annotations
   }
 
@@ -42,13 +42,13 @@ resource "kubernetes_ingress_v1" "frontend" {
     ingress_class_name = var.class_name
 
     rule {
-      host = var.frontend_host
+      host = var.app_host
       http {
         path {
           path_type = "Prefix"
           backend {
             service {
-              name = "frontend"
+              name = "app"
               port {
                 number = 80
               }
