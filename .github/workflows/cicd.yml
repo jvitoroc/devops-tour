@@ -70,16 +70,16 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
     - name: Download API image
-        uses: actions/download-artifact@v3
-        with:
-          name: api
-          path: /tmp
+      uses: actions/download-artifact@v3
+      with:
+        name: api
+        path: /tmp
 
     - name: Download APP image
-        uses: actions/download-artifact@v3
-        with:
-          name: app
-          path: /tmp
+      uses: actions/download-artifact@v3
+      with:
+        name: app
+        path: /tmp
 
     - name: Push API
       run: |
