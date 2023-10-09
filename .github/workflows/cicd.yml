@@ -27,31 +27,6 @@ jobs:
     - name: Test APP
       run: go test -v ./app
 
-    - uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
-    - name: Build API
-      run: docker build ./api -t jvitoroc17/local:api -output type=docker,dest=/tmp/api.tar
-
-    - name: Build APP
-      run: docker build ./app -t jvitoroc17/local:app -output type=docker,dest=/tmp/app.tar
-
-    - name: Upload API image
-      if: github.ref == 'refs/heads/main'
-      uses: actions/upload-artifact@v3
-      with:
-        name: api
-        path: /tmp/api.tar
-
-    - name: Upload APP image
-      if: github.ref == 'refs/heads/main'
-      uses: actions/upload-artifact@v3
-      with:
-        name: app
-        path: /tmp/app.tar
-
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: [test-build-push]
@@ -69,25 +44,15 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-    - name: Download API image
-      uses: actions/download-artifact@v3
-      with:
-        name: api
-        path: /tmp
+    - name: Build API
+      run: docker build ./api -t jvitoroc17/local:api
 
-    - name: Download APP image
-      uses: actions/download-artifact@v3
-      with:
-        name: app
-        path: /tmp
+    - name: Build APP
+      run: docker build ./app -t jvitoroc17/local:app
 
     - name: Push API
-      run: |
-        docker load --input /tmp/api
-        docker push jvitoroc17/local:api
+      run: docker push jvitoroc17/local:api
 
     - name: Push APP
-      run: |
-        docker load --input /tmp/app
-        docker push jvitoroc17/local:app
+      run: docker push jvitoroc17/local:app
 
