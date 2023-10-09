@@ -1,0 +1,93 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  test-build-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Test API
+      run: go test -v ./api
+
+    - name: Test APP
+      run: go test -v ./app
+
+    - uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+    - name: Build API
+      run: docker build ./api -t jvitoroc17/local:api -output type=docker,dest=/tmp/api.tar
+
+    - name: Build APP
+      run: docker build ./app -t jvitoroc17/local:app -output type=docker,dest=/tmp/app.tar
+
+    - name: Upload API image
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v3
+      with:
+        name: api
+        path: /tmp/api.tar
+
+    - name: Upload APP image
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v3
+      with:
+        name: app
+        path: /tmp/app.tar
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [test-build-push]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+    - name: Download API image
+        uses: actions/download-artifact@v3
+        with:
+          name: api
+          path: /tmp
+
+    - name: Download APP image
+        uses: actions/download-artifact@v3
+        with:
+          name: app
+          path: /tmp
+
+    - name: Push API
+      run: |
+        docker load --input /tmp/api
+        docker push jvitoroc17/local:api
+
+    - name: Push APP
+      run: |
+        docker load --input /tmp/app
+        docker push jvitoroc17/local:app
+
