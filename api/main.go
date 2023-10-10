@@ -36,7 +36,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 	}
 
-	w.Write(jsonResponse)
+	_, _ = w.Write(jsonResponse)
 }
 
 func hello(name string) string {
