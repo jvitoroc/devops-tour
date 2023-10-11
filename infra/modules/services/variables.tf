@@ -9,3 +9,11 @@ variable "project_name" {
 variable "env" {
   type = string
 }
+
+variable "api_image" {
+  type = string
+}
+
+variable "app_image" {
+  type = string
+}

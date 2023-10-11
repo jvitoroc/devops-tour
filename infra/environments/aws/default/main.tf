@@ -49,7 +49,7 @@ module "parameters" {
 
 locals {
   env_vars = {
-    for i, param in module.parameters.params :
+    for i, param in module.parameters.env_vars_params :
     format("%s%s", "DEV_OPS_", upper(element(split("/", param.name), length(split("/", param.name)) - 1))) => param.value
   }
 }
@@ -68,6 +68,8 @@ module "services" {
   config_map_name = module.configmap.name
   project_name    = var.name
   env             = var.env
+  api_image       = module.parameters.api_image
+  app_image       = module.parameters.app_image
 }
 
 module "ingress" {

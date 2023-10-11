@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "api" {
       spec {
         container {
           name              = "api"
-          image             = "jvitoroc17/local:api"
+          image             = var.api_image
           image_pull_policy = "Always"
           port {
             container_port = 8080
@@ -71,7 +71,7 @@ resource "kubernetes_deployment" "app" {
       spec {
         container {
           name              = "app"
-          image             = "jvitoroc17/local:app"
+          image             = var.app_image
           image_pull_policy = "Always"
           port {
             container_port = 8080
