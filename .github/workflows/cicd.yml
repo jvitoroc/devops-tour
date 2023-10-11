@@ -80,7 +80,7 @@ jobs:
       with:
           role-to-assume: arn:aws:iam::571985155788:role/github-actions
           role-session-name: devops-tour
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
     - name: Build API
       run: docker build ./api -t jvitoroc17/devops-tour-api:latest
