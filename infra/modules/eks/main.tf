@@ -31,7 +31,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.16.0"
 
-  cluster_name                   = "${var.project_name}-${var.env}-cluster"
+  cluster_name                   = "${var.project_name}-${var.env}"
   cluster_endpoint_public_access = true
 
   cluster_addons = {

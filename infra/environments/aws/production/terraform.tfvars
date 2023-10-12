@@ -1,2 +1,2 @@
 region = "us-east-1"
-name = "devops-tour-project"
+name = "devops-tour-v2"
