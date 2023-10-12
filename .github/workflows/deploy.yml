@@ -1,11 +1,11 @@
-name: CI
+name: Deploy
 
 on:
   workflow_run:
     branches: [ "main", "staging" ]
     workflows: ["CI"]
     types:
-        - completed
+      - completed
 
 permissions:
   id-token: write # This is required for requesting the JWT
