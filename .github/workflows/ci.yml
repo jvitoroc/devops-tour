@@ -4,14 +4,11 @@ on:
   pull_request:
     branches: [ "main" ]
   push:
-    branches: [ "main" ]
+    branches: [ "main", "staging" ]
 
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
-
-env:
-  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/staging' && 'staging' || '' }}
 
 jobs:
   test:
@@ -69,35 +66,8 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      if: env.ENVIRONMENT != ''
+      if: github.event_name != 'pull_request'
 
     - name: Push ${{ matrix.service }}
       run: docker push ${{ steps.tag.outputs.TAG }}
-      if: env.ENVIRONMENT != ''
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [test, lint, build]
-    defaults:
-      run:
-        working-directory: infra/environments/aws/${{ env.ENVIRONMENT }}
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-          role-to-assume: arn:aws:iam::571985155788:role/github-actions
-          role-session-name: devops-tour
-          aws-region: ${{ vars.AWS_REGION }}
-
-    - uses: hashicorp/setup-terraform@v2
-
-    - name: Terraform Init
-      run: terraform init
-
-    - name: Terraform Apply
-      run: |
-        export TF_VAR_IMAGE_TAG=${{ github.sha }}
-        terraform apply --auto-approve
-  
+      if: github.event_name != 'pull_request'
