@@ -80,7 +80,7 @@ jobs:
     needs: [test, lint, build]
     defaults:
       run:
-        working-directory: infra/environments/${{ env.ENVIRONMENT }}
+        working-directory: infra/environments/aws/${{ env.ENVIRONMENT }}
     steps:
     - uses: actions/checkout@v3
 
