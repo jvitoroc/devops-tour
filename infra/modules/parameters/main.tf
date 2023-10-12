@@ -42,6 +42,6 @@ data "aws_ssm_parameters_by_path" "env_vars_parameters" {
 }
 
 data "aws_ssm_parameter" "env_vars_parameters" {
-  for_each = toset(data.aws_ssm_parameters_by_path.parameters.names)
+  for_each = toset(data.aws_ssm_parameters_by_path.env_vars_parameters.names)
   name     = each.key
 }
