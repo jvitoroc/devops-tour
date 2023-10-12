@@ -3,14 +3,12 @@ build-api:
 
 push-api:
 	docker push jvitoroc17/devops-tour-api
-	kubectl delete pod -l app=api
 
 build-app:
 	docker build ./app -t jvitoroc17/devops-tour-app:latest
 
 push-app:
 	docker push jvitoroc17/devops-tour-app
-	kubectl delete pod -l app=app
 
 build-push-api: build-api push-api
 
