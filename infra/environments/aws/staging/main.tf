@@ -13,7 +13,7 @@ terraform {
   backend "s3" {
     bucket         = "devops-tour"
     dynamodb_table = "terraform-locks"
-    key            = "prod/terraform.tfstate"
+    key            = "stg/terraform.tfstate"
     region         = "us-east-1"
   }
 }
@@ -21,7 +21,8 @@ terraform {
 module "default" {
   source = "../default"
 
-  env = "prod"
-  region = var.region
-  name = var.name
+  env       = "stg"
+  region    = var.region
+  name      = var.name
+  image_tag = var.image_tag
 }

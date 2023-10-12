@@ -1,0 +1,40 @@
+name: Go
+
+on:
+  push:
+    branches: [ main, staging ]
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+env:
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infra/environments/${{ env.ENVIRONMENT }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+          role-to-assume: arn:aws:iam::571985155788:role/github-actions
+          role-session-name: devops-tour
+          aws-region: ${{ vars.AWS_REGION }}
+
+    - uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Apply
+      run: |
+        export TF_VAR_IMAGE_TAG=${{ github.sha }}
+        terraform apply --auto-approve
+

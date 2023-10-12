@@ -68,8 +68,8 @@ module "services" {
   config_map_name = module.configmap.name
   project_name    = var.name
   env             = var.env
-  api_image       = module.parameters.api_image
-  app_image       = module.parameters.app_image
+  api_image       = format("%s:%s", module.parameters.api_repository, var.image_tag)
+  app_image       = format("%s:%s", module.parameters.app_repository, var.image_tag)
 }
 
 module "ingress" {
