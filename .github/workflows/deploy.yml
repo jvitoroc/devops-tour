@@ -1,8 +1,12 @@
-name: Go
+name: Deploy
 
 on:
   push:
     branches: [ main, staging ]
+  workflow_run:
+    workflows: [CI]
+    types:
+      - completed
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -17,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./infra/environments/${{ env.ENVIRONMENT }}
+        working-directory: infra/environments/${{ env.ENVIRONMENT }}
     steps:
     - uses: actions/checkout@v3
 

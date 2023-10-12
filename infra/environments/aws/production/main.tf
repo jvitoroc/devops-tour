@@ -21,8 +21,8 @@ terraform {
 module "default" {
   source = "../default"
 
-  env = "prod"
-  region = var.region
-  name = var.name
+  env       = "prod"
+  region    = var.region
+  name      = var.name
   image_tag = var.image_tag
 }
