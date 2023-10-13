@@ -40,5 +40,5 @@ jobs:
     - name: Terraform Apply
       run: |
         export TF_VAR_IMAGE_TAG=${{ github.sha }}
-        terraform apply --auto-approve
+        terraform destroy --auto-approve
   
